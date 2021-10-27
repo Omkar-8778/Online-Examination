@@ -1,6 +1,7 @@
 import './App.css';
 import { Login, Home, Register } from './pages/pageIndex';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import { Navbar, Sidebar } from './components/componentIndex';
 
 function App() {
     return (

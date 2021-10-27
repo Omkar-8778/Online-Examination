@@ -125,7 +125,7 @@
 
 /* Tejas CSS */
 * {
-    font-family: gadugi;
+    font-family: gadugi, sans-serif;
     font-size: 18px;
     box-sizing: border-box;
     margin: 0px;
@@ -220,7 +220,7 @@
     display: flex;
     background: var(--prim);
     position: sticky;
-    padding: 0rem 3rem 0rem 1rem;
+    padding-right: 3rem;
     top: 0;
     left: 0;
     height: 3.5rem;
@@ -240,7 +240,7 @@
 .navbar-brand h3 {
     margin: 0px 1rem 0rem 1rem;
     color: white;
-    font-size: 2rem;
+    font-size: 1.5rem;
 }
 
 .navbar-items {
@@ -316,23 +316,85 @@
     cursor: pointer;
     background-color: #ddd;
 }
-@media only screen and (max-width: 600px) {
-    .navbar-icon {
-        display: none;
-    }
-    .navbar-brand h3 {
+
+/* sidebar  */
+.sidebar {
+    display: flex;
+    background-color: var(--prim);
+    height: 3rem;
+    width: 3rem;
+    justify-content: start;
+    align-items: center;
+}
+.menu-btn > svg {
+    margin-left: 0.8rem;
+    font-size: 1.6rem;
+    background: none;
+    color: white;
+}
+
+.menu {
+    background-color: var(--prim);
+    width: 15rem;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    left: -100%;
+    transition: 1.2s ease-in;
+}
+.menu.active {
+    left: 0;
+    transition: 1s ease-out;
+}
+.menu-items {
+    list-style: none;
+    width: 100%;
+}
+.menu-text {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    padding: 0.5rem 1rem 0.5rem 1rem;
+    height: 3.2rem;
+}
+.menu-text > a {
+    text-decoration: none;
+    color: white;
+    font-size: 1.2 rem;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    width: 100%;
+}
+.menu-text > a:hover {
+    background-color: #2b7a78;
+}
+.menu-text span {
+    margin-left: 1.5rem;
+}
+.menu-close-btn {
+    width: 100%;
+    height: 4rem;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+}
+/* /sidebar */
+
+@media only screen and (max-width: 1110px) {
+    .navbar-link {
+        padding: 1rem;
         font-size: 1rem;
     }
-    #card-user-name {
-        display: none;
+
+    .navbar-brand h3 {
+        font-size: 1.2rem;
     }
-    #card-dropdown {
-        left: -4rem;
+    .btn {
         font-size: 0.8rem;
-        width: 5.8rem;
-    }
-    .card-user-icon {
-        margin: 0 0.5rem 0 0.5rem;
     }
 }
 
@@ -353,19 +415,33 @@
     }
 }
 
-@media only screen and (max-width: 1110px) {
-    .navbar-link {
-        padding: 0.8rem 1rem 1rem 1rem;
-        font-size: 1rem;
+@media only screen and (max-width: 600px) {
+    .navbar-icon {
+        display: none;
     }
-
-    .navbar-brand h3 {
-        font-size: 1.2rem;
+    #btn-sign-in {
+        font-size: 0.7rem;
     }
-    .btn {
-        font-size: 0.8rem;
+    .dropdown {
+        margin-left: 0;
     }
     .navbar-container {
-        padding: 0.5rem;
+        padding-right: 0rem;
+    }
+    .navbar-brand h3 {
+        font-size: 1rem;
+        margin-left: 0.2rem;
+        margin-right: 0.2rem;
+    }
+    #card-user-name {
+        display: none;
+    }
+    #card-dropdown {
+        left: -4rem;
+        font-size: 0.8rem;
+        width: 5.8rem;
+    }
+    .card-user-icon {
+        margin: 0 0.5rem 0 0.5rem;
     }
 }
