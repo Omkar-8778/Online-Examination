@@ -38,7 +38,11 @@ export default function Login() {
 					}
 				})
 				.then((data) => {
+<<<<<<< HEAD
 					console.log(data);
+=======
+					// console.log(data);
+>>>>>>> 957563627391c92e26f6a764198d06077b8790ae
 					if (data.ok === true) {
 						localStorage.setItem("token", JSON.stringify(data.token));
 						setisLoggedIn(true);
