@@ -1,5 +1,5 @@
 const express = require('express')
-const { adminUser } = require('../../Modals/modalsIndex')
+const { adminUser } = require('../../Models/modelIndex')
 const bcrypt = require('bcrypt')
 const { body, validationResult } = require('express-validator')
 const Router = express.Router()
@@ -18,7 +18,7 @@ function save(name, email, password) {
             }).then((data, err) => {
                 if (!err) {
                     console.log(data)
-                    resolve({ ok: true, msg: 'User successfully registered' })
+                    resolve({ ok: true, msg: 'Admin successfully registered' })
                 } else {
                     reject({ ok: false, msg: 'Operation Unsucessfull', error: err })
                 }
