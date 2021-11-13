@@ -69,7 +69,11 @@ export default function Login() {
 	return (
 		<>
 			{isLoggedIn && <Redirect to="/" />}
+<<<<<<< HEAD
 			<Navbar signIn={false} />
+=======
+			<Navbar signIn={!hasToken().ok} />
+>>>>>>> ef9ecca8fc783f5ddb8a11ecb9960b8a1e68d60c
 			<div className="main-form-container">
 				<div className="form-container">
 					<form className="form" onSubmit={handleFormSubmit}>
