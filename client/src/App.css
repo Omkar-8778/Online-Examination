@@ -87,18 +87,18 @@
 }
 
 .popup-container{
-    
     color: #fff;
     top: 30%;
     left: 33%;
     z-index: 100;
     position: fixed;
-    /* backdrop-filter: blur(15px); */
     font-family: monospace;
-
+    border: 1px solid #000;
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
 }
 
-.popup-form{
+.popup-form {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -106,17 +106,18 @@
     gap: 1rem;
     border-radius: 10px;
     height: 30vh;
-    width: 35vw;
-    background-color:#fff ;
+    width: 34vw;
+    background-color:rgba(245, 245, 245, 0.842);
 }
 
-.popup-input{
+.popup-input {
     width: 25vw;
     text-align: center;
     padding: 0.5rem;
+    border: 2px solid #000;
 }
 
-.popup-btn{
+.popup-btn {
     padding: 0.5rem;
     width: 7vw;
     border: 2px solid #000;
@@ -127,13 +128,25 @@
     transition: 400ms ease-in-out;
 }
 
-.popup-btn:hover{
+.popup-btn:hover {
     background-color: #fff;
     color: #000;
-
 }
 
 @media screen and (max-width: 950px) {
+    
+    .popup-form{
+        width: 40vw;
+    }
+    
+    .popup-input{
+        width: 30vw;
+    }
+    .popup-btn{
+        width: 10vw;
+    }
+
+
     .main-form-container .form-container {
         width: 40vw;
     }
@@ -146,7 +159,21 @@
         width: 20vw;
     }
 }
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 670px) {
+    
+    .popup-container{
+        left: 25%;
+    }
+    .popup-form{
+        width: 50vw;
+    }
+    
+    .popup-input{
+        width: 40vw;
+    }
+    .popup-btn{
+        width: 20vw;
+    }
     .main-form-container .form-container {
         width: 60vw;
     }
@@ -161,6 +188,19 @@
 }
 
 @media screen and (max-width: 400px) {
+    .popup-container{
+        left: 17%;
+    }
+    .popup-form{
+        width: 70vw;
+    }
+    
+    .popup-input{
+        width: 60vw;
+    }
+    .popup-btn{
+        width: 30vw;
+    }
     .main-form-container {
         display: block;
         width: 100%;
@@ -421,7 +461,7 @@
 }
 .menu-text {
     display: flex;
-    justify-content: start;
+    justify-content: flex-start;
     align-items: center;
     padding: 0.5rem 1rem 0.5rem 1rem;
     height: 3.2rem;
@@ -459,6 +499,23 @@
     min-height: 100vh;
     width: 100%;
     justify-content: flex-start;
+}
+.copied-label {
+    display: none;
+    background: white;
+    color: slategray;
+    margin-left: 0.6rem;
+    padding-left: 0.3rem;
+    padding-right: 0.3rem;
+    border-radius: 10%;
+    font-size: 0.6rem;
+}
+.heading-sep {
+    margin-left: 2.3rem;
+    margin-right: 3rem;
+    border-bottom: 2px solid lightslategray;
+    font-size: 1.7rem;
+    color: #354146;
 }
 .r1 {
     display: flex;
@@ -500,6 +557,7 @@
 }
 .r-card-top > span {
     font-size: 1.2rem;
+    display: block;
     color: white;
     margin-left: 1rem;
 }
@@ -535,6 +593,11 @@
 }
 .r2-card > .r-card-top {
     background-color: #000;
+    height: 40%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
 }
 .create-btn {
     display: block;
