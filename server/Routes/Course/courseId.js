@@ -30,7 +30,9 @@ const findCourseProperty = (property, value) => {
 
 const postStudent = (course_code) => {};
 
-router.post("/", (req, res) => {});
+router.post("/", (req, res) => {
+	res.send("Not Found");
+});
 
 router.get("/", async (req, res) => {
 	if (req.obj.role === "student") {
@@ -202,17 +204,22 @@ router.get("/:code", async (req, res) => {
 					(c) => c.course_id === req.params.code
 				);
 			})
-			.catch((err) => console.log(err));
+			.catch((err) => {
+				console.log(err);
+				res.json({ ok: false, error: err });
+			});
 
 		if (isStudentEnrolled) {
 			var collection = mongoose.model(req.params.code, courseSchema);
 			var tests = await collection.find({}).exec();
 			var response = tests.map((test) => {
+				// console.log(test);
 				var obj = {
 					test_name: test.test_name,
 					test_type: test.test_type,
 					total_marks: test.total_marks,
 					isStarted: test.isStarted,
+					course_name: test.name,
 					createdAt: test.createdAt,
 				};
 				// if (test.isStarted) {
@@ -228,6 +235,8 @@ router.get("/:code", async (req, res) => {
 				return obj;
 			});
 			res.json(response);
+		} else {
+			res.json({ ok: false, msg: "Not Enrolled" });
 		}
 	} else if (req.obj.role === "teacher") {
 		var course_auth = false;
@@ -254,6 +263,8 @@ router.get("/:code", async (req, res) => {
 				}
 			});
 		}
+	} else {
+		res.json({ ok: false, msg: "Not Authorized" });
 	}
 });
 
@@ -278,6 +289,7 @@ router.get("/:code/:test", async (req, res) => {
 					test_type: test.test_type,
 					total_marks: test.total_marks,
 					isStarted: test.isStarted,
+					course_name: test.name,
 					createdAt: test.createdAt,
 				};
 				if (test.isStarted) {
@@ -290,10 +302,12 @@ router.get("/:code/:test", async (req, res) => {
 						};
 					});
 				}
-				res.json(obj);
+				res.json({ ok: true, ...obj });
 			} else {
 				res.json({ ok: false, msg: `Test doesn't exist` });
 			}
+		} else {
+			res.json({ ok: false, msg: "Student Not register" });
 		}
 	} else if (req.obj.role === "teacher") {
 		const teacher = await teacherUser.findOne({ email: req.obj.email }).exec();
