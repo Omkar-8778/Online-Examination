@@ -6,6 +6,7 @@ const path = require('path');
 const { teacherUser, studentUser } = require('../../Models/modelIndex');
 const { courseIndex } = require('../../Models/modelIndex');
 const { courseSchema, testSchema } = require('../../Schema/schemaIndex');
+const student = require('../../Models/student');
 
 dotenv.config({
     path: path.join(__dirname, '../', '.env'),
@@ -416,22 +417,9 @@ router.post(
                         })
                         .then((data, err) => {
                             if (!err) {
-                                updateStudentUser(
-                                    req.obj.email,
-                                    `${req.params.code}-${req.params.test}`,
-                                    marks
-                                ).then((data, err) => {
-                                    if (data) {
-                                        res.json({
-                                            ok: true,
-                                            msg: 'Test succesfully attempted',
-                                        });
-                                    } else {
-                                        res.json({
-                                            ok: false,
-                                            msg: 'Updating student unsuccessfull',
-                                        });
-                                    }
+                                res.json({
+                                    ok: true,
+                                    msg: 'Test attempt successfull',
                                 });
                             } else {
                                 res.json({
@@ -502,6 +490,7 @@ router.get('/:code/:test', async (req, res) => {
                     test_name: test.test_name,
                     test_type: test.test_type,
                     total_marks: test.total_marks,
+                    showMarks: test.showMarks,
                     isStarted: test.isStarted,
                     course_name: test.name,
                     createdAt: test.createdAt,
@@ -655,6 +644,74 @@ router.post('/:code/:test/start', async (req, res) => {
     }
 });
 
+function storeStudentMarks(testDoc, test_name) {
+    testDoc.students_enrolled.map(async (studentId) => {
+        try {
+            const stud = await student.findById(studentId).exec();
+            // console.log(stud.test_attempted);
+            const attempt = mongoose.model(
+                `${testDoc.code}-${test_name}`,
+                testSchema
+            );
+            if (stud !== null) {
+                const attemptDoc = await attempt
+                    .findOne({ student_email: stud.email })
+                    .exec();
+                console.log('Student : ' + stud.email);
+                console.log('attempt : ' + attemptDoc.marks[0]);
+                if (attemptDoc.marks[0]) {
+                    stud.test_attempted.push({
+                        code: `${attemptDoc.course_code}-${test_name}`,
+                        marks: attemptDoc.marks[0],
+                    });
+                    console.log(stud.test_attempted);
+                    stud.save().then((data) => {
+                        console.log('Student saved');
+                    });
+                }
+            }
+        } catch (err) {
+            console.log('error : ' + err);
+            return false;
+        }
+    });
+    console.log(testDoc.code);
+    return true;
+}
+
+function deleteStudentMarks(testDoc, str) {
+    try {
+        testDoc.students_enrolled.map(async (ids) => {
+            let stud = await studentUser.findById(ids).exec();
+            // console.log(stud);
+            if (stud !== null) {
+                stud.test_attempted = stud.test_attempted.filter((temp) => {
+                    if (temp.code === str) {
+                        console.log('temp : ' + temp);
+                        return false;
+                    } else {
+                        return true;
+                    }
+                });
+                stud.save()
+                    .then((doc) => {
+                        return true;
+                    })
+                    .catch((error) => {
+                        console.log('Error : ' + error);
+                        return false;
+                    });
+                // console.log(stud);
+            }
+        });
+    } catch (e) {
+        console.log('Oops');
+        return false;
+    }
+
+    return true;
+}
+
 router.post('/:code/:test/show', async (req, res) => {
     if (req.obj.role === 'teacher') {
         const teacher = await teacherUser
@@ -684,15 +741,48 @@ router.post('/:code/:test/show', async (req, res) => {
                     test.showMarks = req.body.showMarks;
                     test.save()
                         .then((testObj) => {
-                            testObj.showMarks
-                                ? res.json({
-                                      ok: true,
-                                      msg: 'Marks Visible to student',
-                                  })
-                                : res.json({
-                                      ok: true,
-                                      msg: 'Marks Hidden from student',
-                                  });
+                            console.log(testObj.showMarks);
+                            if (testObj.showMarks) {
+                                let operation = false;
+                                teacher.courses.map((object) => {
+                                    if (object.code === req.params.code) {
+                                        operation = storeStudentMarks(
+                                            object,
+                                            req.params.test
+                                        );
+                                    }
+                                });
+
+                                operation
+                                    ? res.json({
+                                          ok: true,
+                                          msg: 'Marks Visible to student',
+                                      })
+                                    : res.json({
+                                          ok: false,
+                                          msg: 'Student updation failed',
+                                      });
+                            } else {
+                                let operation = false;
+                                teacher.courses.map((object) => {
+                                    if (object.code === req.params.code) {
+                                        operation = deleteStudentMarks(
+                                            object,
+                                            `${req.params.code}-${req.params.test}`
+                                        );
+                                    }
+                                });
+
+                                operation
+                                    ? res.json({
+                                          ok: true,
+                                          msg: 'Marks Hidden from student',
+                                      })
+                                    : res.json({
+                                          ok: false,
+                                          msg: 'Student updation failed',
+                                      });
+                            }
                         })
                         .catch((err) => {
                             res.json({
@@ -711,6 +801,64 @@ router.post('/:code/:test/show', async (req, res) => {
                 res.json({
                     ok: false,
                     msg: "You're not authorized to do this task",
+                });
+            }
+        } else {
+            res.json({ ok: false, msg: 'No teacher with that credentials' });
+        }
+    }
+});
+
+router.get('/:code/:test/result', async (req, res) => {
+    if (req.obj.role === 'teacher') {
+        const teacher = await teacherUser
+            .findOne({ email: req.obj.email })
+            .exec();
+        if (teacher) {
+            // console.log(teacher);
+            let isCourseByThisTeacher = false;
+            teacher.courses.map((course) => {
+                if (course.code === req.params.code) {
+                    isCourseByThisTeacher = true;
+                }
+            });
+
+            if (isCourseByThisTeacher) {
+                const collection = mongoose.model(
+                    `${req.params.code}-${req.params.test}`,
+                    testSchema
+                );
+                var all_marks = await collection
+                    .find({}, { quiz: 0, _id: 0 })
+                    .exec();
+
+                const students_info = await studentUser
+                    .find({}, { name: 1, email: 1 })
+                    .exec();
+
+                if (all_marks) {
+                    all_marks = all_marks.map((ele) => {
+                        stud = students_info.find(
+                            (stud) => stud.email === ele.student_email
+                        );
+
+                        return {
+                            student_email: ele.student_email,
+                            marks: ele['_doc'].marks[0],
+                            student_name: stud.name,
+                        };
+                    });
+                }
+
+                res.json({
+                    ok: true,
+                    msg: 'Teacher verified',
+                    students_marks: all_marks,
+                });
+            } else {
+                res.json({
+                    ok: false,
+                    msg: 'Teacher has not created this course',
                 });
             }
         } else {
